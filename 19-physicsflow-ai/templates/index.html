@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{ title }</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Exo+2&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#090d1a;--primary:#7c3aed;--accent:#38bdf8;--paper:#edf2ff}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:'Exo+2',sans-serif;color:var(--ink);background:radial-gradient(circle at 10% 10%,#38bdf838,transparent 35%),radial-gradient(circle at 90% 90%,#7c3aed30,transparent 40%),#edf2ff}
+.shell{min-height:100vh;display:grid;place-items:center;padding:24px}.app{width:min(1120px,100%);height:min(780px,calc(100vh - 48px));display:grid;grid-template-columns:300px 1fr;border-radius:28px;overflow:hidden;background:rgba(255,255,255,.9);box-shadow:0 24px 70px rgba(0,0,0,.18);backdrop-filter:blur(14px)}
+.side{padding:28px;background:linear-gradient(160deg,var(--primary),var(--accent));color:white;display:flex;flex-direction:column;justify-content:space-between}.logo{width:54px;height:54px;border-radius:16px;background:#ffffff25;border:1px solid #ffffff55;display:grid;place-items:center;font-size:24px;font-weight:800}h1{font-size:21px;margin:12px 0 4px}.domain{opacity:.82;font-size:12px}.copy{font-size:13px;line-height:1.7;opacity:.9}.clear{padding:12px;border-radius:13px;border:1px solid #ffffff55;background:#ffffff18;color:white;font:inherit;cursor:pointer}
+.chat{display:flex;flex-direction:column;min-width:0;background:var(--paper)}.top{padding:18px 22px;border-bottom:1px solid #17203318;display:flex;justify-content:space-between;align-items:center}.status{font-size:12px}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:6px}
+.messages{flex:1;overflow:auto;padding:28px;display:flex;flex-direction:column;gap:15px}.msg{max-width:78%;padding:14px 17px;border-radius:18px;line-height:1.55;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}.bot{align-self:flex-start;background:white;border:1px solid #17203315;box-shadow:0 8px 22px #0000000b;border-bottom-left-radius:5px}.user{align-self:flex-end;background:var(--primary);color:white;border-bottom-right-radius:5px}
+.typing{display:none;align-self:flex-start;background:white;padding:10px 14px;border-radius:16px}.typing span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin:0 2px;animation:b 1s infinite alternate}.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}@keyframes b{to{transform:translateY(-5px);opacity:.35}}
+.err{display:none;color:#b91c1c;font-size:12px;padding:0 22px 10px}form{display:flex;gap:10px;padding:18px 22px;border-top:1px solid #17203315;background:#ffffffa8}textarea{flex:1;resize:none;max-height:130px;border:1px solid #17203322;border-radius:15px;padding:13px;font:inherit;outline:none;background:white}.send{border:0;border-radius:15px;padding:0 22px;background:var(--primary);color:white;font:inherit;font-weight:700;cursor:pointer}.send:disabled{opacity:.55}
+@media(max-width:760px){.shell{padding:0}.app{height:100vh;border-radius:0;grid-template-columns:1fr}.side{display:none}.messages{padding:18px 14px}.msg{max-width:88%}form{padding:12px}}
+</style></head><body><div class="shell"><div class="app">
+<aside class="side"><div><div class="logo">∞</div><h1>{ title }</h1><div class="domain">{ domain }</div><p class="copy">Physics • Physics identity<br><br>Ask focused questions and get helpful Gemini-powered answers.</p></div><button class="clear" id="clear">Clear conversation</button></aside>
+<main class="chat"><header class="top"><strong>{ title }</strong><span class="status"><i class="dot"></i>AI online</span></header>
+<section class="messages" id="messages"><div class="msg bot">{ welcome }</div><div class="typing" id="typing"><span></span><span></span><span></span></div></section>
+<div class="err" id="err"></div><form id="form"><textarea id="input" rows="1" placeholder="Ask about { domain }..."></textarea><button class="send" id="send">Send</button></form>
+</main></div></div>
+<script>
+const f=document.getElementById('form'),i=document.getElementById('input'),m=document.getElementById('messages'),t=document.getElementById('typing'),s=document.getElementById('send'),e=document.getElementById('err');
+function add(x,c){let d=document.createElement('div');d.className='msg '+c;d.textContent=x;m.insertBefore(d,t);m.scrollTop=m.scrollHeight}
+function error(x){e.textContent=x;e.style.display='block';setTimeout(()=>e.style.display='none',4000)}
+i.addEventListener('input',()=>{i.style.height='auto';i.style.height=Math.min(i.scrollHeight,130)+'px'});
+i.addEventListener('keydown',x=>{if(x.key==='Enter'&&!x.shiftKey){x.preventDefault();f.requestSubmit()}});
+f.addEventListener('submit',async x=>{x.preventDefault();let q=i.value.trim();if(!q){error('Please enter a message.');return}add(q,'user');i.value='';i.style.height='auto';s.disabled=true;t.style.display='block';
+try{let r=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q})});let d=await r.json();if(!r.ok)throw Error(d.error||'Request failed');add(d.reply,'bot')}catch(z){error(z.message)}finally{t.style.display='none';s.disabled=false;i.focus()}});
+document.getElementById('clear').onclick=async()=>{await fetch('/clear',{method:'POST'});m.querySelectorAll('.msg').forEach(x=>x.remove());add({ welcome|tojson },'bot')};
+</script></body></html>
