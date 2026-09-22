@@ -1,1 +1,4 @@
-Flask>=3.1,<4\ngunicorn>=23,<24\npython-dotenv>=1.1,<2\ngoogle-genai>=1.30,<2\n
+Flask>=3.1,<4
+gunicorn>=23,<24
+python-dotenv>=1.1,<2
+google-genai>=1.30,<2
